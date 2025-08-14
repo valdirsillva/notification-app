@@ -1,6 +1,8 @@
 import express from "express";
 import http from "http";
 import cors from "cors";
+import dotenv from "dotenv";
+dotenv.config();
 import { Server as SocketIOServer } from "socket.io";
 import { router as notificationsRoutes } from "./routes/api-routes";
 
@@ -8,7 +10,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:4200", // domínio do Angular
+    origin: process.env.FRONTEND_HOST || "http://localhost:4200", // domínio do Angular
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
@@ -29,7 +31,7 @@ const server = http.createServer(app);
  */
 const io = new SocketIOServer(server, {
   cors: {
-    origin: "http://localhost:4200",
+    origin: process.env.FRONTEND_HOST || "http://localhost:4200",
     methods: ["GET", "POST"],
   },
 });
