@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { CreateNotification } from "../useCases/create-notification";
 import { Notification } from "../dtos/notification";
 import { ListNotification } from "../useCases/list-notification";
+import { io } from "../server";
 
 export class NotificationController {
   private useCaseNotificationCreate: CreateNotification;
@@ -19,13 +20,22 @@ export class NotificationController {
     const payload = req.body as Notification;
 
     if (!payload.messageContent)
-      return res
-        .status(400)
-        .json({ error: `A ${payload.messageContent} não pode ser vazio.` });
+      return res.status(400).json({
+        error: `A ${payload.messageContent} não pode ser vazio.`,
+        success: false,
+      });
 
     try {
-      await this.useCaseNotificationCreate.execute(payload);
-      res.status(201).json({ message: "Notificação criada com sucesso" });
+      const notitication = await this.useCaseNotificationCreate.execute(
+        payload
+      );
+
+      /**
+       * Enviar para todos os clientes conectados
+       */
+      io.emit("nova_notificacao", notitication);
+
+      res.status(202).json({ success: true });
     } catch (error) {
       next(error);
     }
@@ -36,10 +46,16 @@ export class NotificationController {
     res: Response,
     next: NextFunction
   ) {
-    const { mensagemId } = req.body;
+    const { mensagemId } = req.params;
+
+    console.log(mensagemId);
 
     try {
-      await this.useCaseNotificationList.execute(mensagemId);
+      const notification = await this.useCaseNotificationList.execute(
+        mensagemId
+      );
+      console.log(notification);
+      res.status(200).json({ success: true });
     } catch (error) {
       next(error);
     }

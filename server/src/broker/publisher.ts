@@ -1,5 +1,6 @@
 import amqp from "amqplib";
 import { Notification } from "../dtos/notification";
+import { messageStatusMap } from "../cache-in-memory/cache-in-memory";
 
 export class Publisher {
   constructor() {}
@@ -35,6 +36,8 @@ export class Publisher {
       );
 
       console.log(" [x] Send %s", JSON.stringify(data));
+      // Adiciona messageId in-memory
+      messageStatusMap.set(data.messageId, "AGUARDANDO PROCESSAMENTO");
 
       await channel.close();
       await connection.close();

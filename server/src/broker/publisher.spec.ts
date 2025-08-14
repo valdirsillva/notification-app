@@ -22,7 +22,7 @@ describe("Publisher", () => {
   it("should publish a message to the RabbitMQ queue", async () => {
     const data = {
       messageId: "123",
-      messageContent: "Test message notification",
+      mensagem: "Test message notification",
     };
 
     const publisher = new Publisher();
@@ -37,7 +37,7 @@ describe("Publisher", () => {
   it("should handle error when publishing message", async () => {
     const data = {
       messageId: "456",
-      messageContent: "This will fail",
+      mensagem: "This will fail",
     };
 
     channelMock.publish.mockImplementationOnce(() => {

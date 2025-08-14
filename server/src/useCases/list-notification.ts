@@ -1,11 +1,12 @@
-import { Publisher } from "../broker/publisher";
+import { main } from "../broker/consumer";
+import { messageStatusMap } from "../cache-in-memory/cache-in-memory";
 
 export class ListNotification {
   constructor() {}
 
   async execute(mensagemId: string) {
-    const messages = new Map<string, string>();
+    main();
 
-    // messages.set(//mensagemId., status);
+    return messageStatusMap.get(mensagemId) || "NAO_ENCONTRADO";
   }
 }
